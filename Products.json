@@ -1,0 +1,20 @@
+[
+	{
+		"id": 1,
+		"code": "0001",
+		"name": "ejemplo",
+		"desc": "es un ejemplo",
+		"price": 5,
+		"thumbnail": "no hay thumbnail",
+		"stock": 15
+	},
+	{
+		"id": 2,
+		"code": "0002",
+		"name": "Producto Editado",
+		"desc": "Descripción Editada",
+		"price": 10,
+		"thumbnail": "thumbnail-editado",
+		"stock": 20
+	}
+]
