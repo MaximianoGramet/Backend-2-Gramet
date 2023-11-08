@@ -61,7 +61,7 @@ class ProductManager{
         if (productToEdit) {
             Object.assign(productToEdit, updatedProduct);
             //me recomendaron que use el object.assign para ahorrarme unas lineas, 
-            //usualmente abria unos 5 if-else, para acerlo
+            //usualmente abria hecho unos 5 if-else, para hacerlo
             const response = await this.SaveFile(this.Products);
 
             if (response) {
