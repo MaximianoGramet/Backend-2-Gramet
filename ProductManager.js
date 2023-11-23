@@ -45,32 +45,59 @@ class ProductManager{
     
 
     async addProduct(product){
-        product.id = this.idcounter++;
-        this.Products.push(product)
-        const response= await this.SaveFile(this.Products)
-
-        if(response){
-            console.log("producto creado");
-        }else{
-            console.log("Error creacion");
+        const dupedcode = this.Products.some((element)=>element.code!=product.code)
+        if(!dupedcode){
+            try{
+                product.id = this.idcounter++;
+                this.Products.push(product)
+                await this.SaveFile(this.Products)
+                console.log("Product created");
+            }catch(error){
+                console.log("Error:"+error);
+            }
         }
     }
 
     async editProduct(id, updatedProduct) {
         const productToEdit = this.getProductById(id);
-        if (productToEdit) {
-            Object.assign(productToEdit, updatedProduct);
-            //me recomendaron que use el object.assign para ahorrarme unas lineas, 
-            //usualmente abria hecho unos 5 if-else, para hacerlo
-            const response = await this.SaveFile(this.Products);
 
-            if (response) {
-                console.log("Producto editado con éxito");
+
+        if (productToEdit) {
+            const index = this.Products.findIndex(product => product.id == id);
+            console.log(index)
+
+            if (index !== -1) {
+                let titleP = updatedProduct.title ?? productToEdit.title;
+                let descriptionP = updatedProduct.desc ?? productToEdit.desc;
+                let codeP = updatedProduct.code ?? productToEdit.code;
+                let priceP = isNaN(updatedProduct.price) ? productToEdit.price : Number(updatedProduct.price);
+                let stockP = updatedProduct && updatedProduct.stock != null ? updatedProduct.stock : productToEdit.stock;
+                let thumbnailsP = updatedProduct.thumbnail ?? productToEdit.thumbnail;
+
+
+
+                this.Products[index] = { 
+                ...this.Products[index],
+                title: titleP, 
+                description: descriptionP, 
+                code: codeP, 
+                price: Number(priceP), 
+                stock: Number(stockP), 
+                thumbnail: thumbnailsP 
+                }
+
+
+                const response = await this.SaveFile(this.Products);
+                if (response) {
+                    console.log("Producto editado con éxito");
+                } else {
+                    console.log("Failure at editing");
+                }
             } else {
-                console.log("Error en la edición del producto");
-            }
+                console.log("Index not found for the product");
+                }
         } else {
-            console.log("Producto no encontrado para editar");
+            tconsole.log("Product not found");
         }
     }
     
@@ -97,7 +124,7 @@ class ProductManager{
         return product || null; 
     }
 
-    ConsultarProductos(){
+    getProducts(){
         console.log(this.Products);
         return this.Products;
     }
@@ -107,11 +134,11 @@ class ProductManager{
 
 
 class Product {
-    constructor(code,name,desc,price,thumbnail,stock){
+    constructor(code,title,description,price,status,thumbnail,stock){
         this.id=null;
         this.code=code;
-        this.name=name;
-        this.desc=desc;
+        this.title=title;
+        this.description=description;
         this.price=price;
         this.thumbnail=thumbnail;
         this.stock=stock;  
@@ -120,10 +147,10 @@ class Product {
 
 async function ProductEnabler(){
 
-    const productManager = new ProductManager("./Entrega2_Backend_Gramet/Products.json")
+    const productManager = new ProductManager("./Products.json")
 
     console.log("json inicial:");
-    productManager.ConsultarProductos()
+    productManager.getProducts()
 
     const Producto1= new Product ("0001","ejemplo","es un ejemplo",5,"no hay thumbnail",15);
     const Producto2= new Product ("0002","ejemplo editable","es un ejemplo que se edita",5,"no hay thumbnail",15);
@@ -134,22 +161,22 @@ async function ProductEnabler(){
     await productManager.addProduct(Producto3)
 
     console.log("json con productos agregados");
-    productManager.ConsultarProductos()
+    productManager.getProducts()
 
     const idEditar = 2; 
     const productoEditado = {
-    name: "Producto Editado",
-    desc: "Descripción Editada",
+    title: "Producto Editado",
+    description: "Descripción Editada",
     price: 10,
     thumbnail: "thumbnail-editado",
     stock: 20,
     };
     await productManager.editProduct(idEditar, productoEditado);
 
-    await productManager.deleteProduct(3);
+    productManager.deleteProduct(3);
 
     console.log("json con productos editado/eliminado");
-    await productManager.ConsultarProductos()
+    await productManager.getProducts()
 }
 
 ProductEnabler()
