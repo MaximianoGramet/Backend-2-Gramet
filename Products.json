@@ -7,14 +7,5 @@
 		"price": 5,
 		"thumbnail": "no hay thumbnail",
 		"stock": 15
-	},
-	{
-		"id": 2,
-		"code": "0002",
-		"title": "Producto Editado",
-		"description": "Descripción Editada",
-		"price": 10,
-		"thumbnail": "thumbnail-editado",
-		"stock": 20
 	}
 ]

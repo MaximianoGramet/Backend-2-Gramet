@@ -45,7 +45,14 @@ class ProductManager{
     
 
     async addProduct(product){
-        const dupedcode = this.Products.some((element)=>element.code!=product.code)
+        if (!product.title || !product.description || !product.price || !product.thumbnail || !product.code || !product.stock) 
+        {
+            console.log("Missing field");
+            return;
+        }
+
+        const dupedcode = this.Products.some((element)=>element.code==product.code)
+
         if(!dupedcode){
             try{
                 product.id = this.idcounter++;
@@ -68,7 +75,7 @@ class ProductManager{
 
             if (index !== -1) {
                 let titleP = updatedProduct.title ?? productToEdit.title;
-                let descriptionP = updatedProduct.desc ?? productToEdit.desc;
+                let descriptionP = updatedProduct.desc ?? productToEdit.description;
                 let codeP = updatedProduct.code ?? productToEdit.code;
                 let priceP = isNaN(updatedProduct.price) ? productToEdit.price : Number(updatedProduct.price);
                 let stockP = updatedProduct && updatedProduct.stock != null ? updatedProduct.stock : productToEdit.stock;
@@ -89,7 +96,7 @@ class ProductManager{
 
                 const response = await this.SaveFile(this.Products);
                 if (response) {
-                    console.log("Producto editado con éxito");
+                    console.log("Product edited correctly");
                 } else {
                     console.log("Failure at editing");
                 }
@@ -103,23 +110,25 @@ class ProductManager{
     
     deleteProduct(id){
         const productDelete = this.Products.findIndex((product) => product.id === id);
-        if(productDelete)
+        if(productDelete!=-1)
         {
             this.Products.splice(productDelete,1)
             if (this.SaveFile(this.Products)) {
-                console.log("Producto eliminado")
+                console.log("Product deleted")
             } else{
-                console.log("Eliminacion fallida");
+                console.log("Delete failed");
             }
-        }    
+        }  else{
+            console.log("Product not found")
+        }
     }
 
     getProductById(id) {
         const product = this.Products.find((prod) => prod.id === id);
         if(product){
-            console.log("Producto encontrado");
+            console.log("Product Found");
         }else{
-            console.log("error en busqueda");
+            console.log("Error at search");
         }
         return product || null; 
     }
@@ -134,7 +143,7 @@ class ProductManager{
 
 
 class Product {
-    constructor(code,title,description,price,status,thumbnail,stock){
+    constructor(code,title,description,price,thumbnail,stock){
         this.id=null;
         this.code=code;
         this.title=title;
